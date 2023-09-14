@@ -14,40 +14,25 @@
                 </div>
             </div>
         </div>
-        <Note v-for="note in notes" :key="note.id" :note="note" @deleteClicked="deleteNote" />
+        <Note v-for="note in storeNotes.notes" :key="note.id" :note="note" @deleteClicked="deleteNote" />
     </div>
 </template>
 
 <script setup>
 import Note from '@/components/Notes/Note.vue'
 
+import { useStoreNotes } from '@/stores/storeNotes.js'
+
 import { ref } from 'vue';
+
+const storeNotes = useStoreNotes()
 
 const newNote = ref('')
 const newNoteRef = ref(null)
 
-const notes = ref([
-    {
-        id: 'id1',
-        content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Culpa aut odit aliquid vero, mollitia explicabo, ratione voluptas rem porro distinctio vel veniam blanditiis esse aperiam doloribus possimus voluptatum.Laborum, aut.'
-    },
-    {
-        id: 'id2',
-        content: 'This is shorter note! woo!'
-    }
-])
 
 const addNote = () => {
-    let currentDate = new Date().getTime(),
-        id = currentDate.toString()
-
-    let note = {
-        id,
-        content: newNote.value
-    }
-
-    notes.value.unshift(note)
-
+    storeNotes.addNote(newNote.value)
     newNote.value = ''
     newNoteRef.value.focus()
 }
