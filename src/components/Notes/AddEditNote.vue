@@ -4,7 +4,7 @@
         <div class="field">
             <div class="control">
                 <textarea :value="modelValue" @input="$emit('update:modelValue', $event.target.value)" class="textarea"
-                    :placeholder="placeholder" ref="textareaRef" v-autofocus></textarea>
+                    :placeholder="placeholder" ref="textareaRef" maxlength="100" v-autofocus></textarea>
             </div>
         </div>
 

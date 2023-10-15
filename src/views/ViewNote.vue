@@ -15,6 +15,7 @@ import Note from '@/components/Notes/Note.vue'
 import AddEditNote from '@/components/Notes/AddEditNote.vue';
 
 import { useStoreNotes } from '@/stores/storeNotes.js'
+import { useWatchCharacter } from '@/use/useWatchCharacter.js'
 
 import { ref } from 'vue';
 
@@ -28,5 +29,7 @@ const addNote = () => {
     newNote.value = ''
     addEditNoteRef.value.focusTextarea() // call function from child component
 }
+
+useWatchCharacter(newNote)
 
 </script>
