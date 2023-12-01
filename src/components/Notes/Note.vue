@@ -12,14 +12,13 @@
             <router-link :to="`/editNote/${note.id}`" class="card-footer-item">Edit</router-link>
             <a @click.prevent="modals.deleteNote = true" href="#" class="card-footer-item">Delete</a>
         </footer>
-        <ModalDeleteNote v-if="modals.deleteNote" v-model="modals.deleteNote" />
+        <ModalDeleteNote v-if="modals.deleteNote" v-model="modals.deleteNote" :noteId="note.id" />
     </div>
 </template>
 
 <script setup>
 import { computed, reactive } from 'vue';
 import ModalDeleteNote from './ModalDeleteNote.vue';
-import { useStoreNotes } from '@/stores/storeNotes.js';
 
 const props = defineProps({
     note: {
@@ -28,7 +27,6 @@ const props = defineProps({
     }
 })
 
-const storeNotes = useStoreNotes()
 
 const characterLength = computed(() => {
     let length = props.note.content.length
