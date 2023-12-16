@@ -1,36 +1,43 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
-import { collection, onSnapshot, doc, setDoc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy, addDoc } from "firebase/firestore";
 import { db } from '@/js/firebase'
 
 const notesCollectionRef = collection(db, "notes")
 
+const notesCollectionQuery = query(notesCollectionRef, orderBy("date", "desc"));
+
 export const useStoreNotes = defineStore('storeNotes', {
     state: () => {
         return {
-            notes: []
+            notes: [],
+            notesLoaded: false
         }
     },
     actions: {
         async getNotes() {
-            onSnapshot(notesCollectionRef, (querySnapshot) => {
+            this.notesLoaded = false
+            onSnapshot(notesCollectionQuery, (querySnapshot) => {
                 let notes = [];
                 querySnapshot.forEach((doc) => {
                     let note = {
                         id: doc.id,
-                        content: doc.data().content
+                        content: doc.data().content,
+                        date: doc.data().date
                     }
 
                     notes.push(note)
                 });
                 this.notes = notes
+                this.notesLoaded = true
             });
         },
         async addNote(newNoteContent) {
             let currentDate = new Date().getTime(),
-                id = currentDate.toString()
+                date = currentDate.toString()
 
-            await setDoc(doc(notesCollectionRef, id), {
-                content: newNoteContent
+            await addDoc(notesCollectionRef, {
+                content: newNoteContent,
+                date
             });
 
         },
