@@ -29,7 +29,7 @@
                     </div>
                     <div class="field is-grouped is-grouped-right">
                         <p class="control">
-                            <button type="button" class="button is-primary">
+                            <button type="submit" class="button is-primary">
                                 {{ formTitle }}
                             </button>
                         </p>
@@ -42,6 +42,9 @@
 
 <script setup>
 import { ref, computed, reactive } from 'vue'
+import { useStoreAuth } from '@/stores/storeAuth.js'
+
+const storeAuth = useStoreAuth()
 
 const register = ref(false)
 
@@ -59,9 +62,9 @@ const onSubmit = () => {
         alert('Please enter an email and password')
     } else {
         if (register.value) {
-            console.log('register user with this', credentials);
+            storeAuth.registerUser(credentials)
         } else {
-            console.log('login user with this', credentials);
+            storeAuth.loginUser(credentials)
         }
     }
 }
