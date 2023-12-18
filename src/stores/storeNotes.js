@@ -1,10 +1,12 @@
 import { defineStore, acceptHMRUpdate } from 'pinia'
 import { collection, onSnapshot, doc, deleteDoc, updateDoc, query, orderBy, addDoc } from "firebase/firestore";
 import { db } from '@/js/firebase'
+import { useStoreAuth } from './storeAuth';
 
-const notesCollectionRef = collection(db, "notes")
+let notesCollectionRef
+let notesCollectionQuery
 
-const notesCollectionQuery = query(notesCollectionRef, orderBy("date", "desc"));
+let getNoteSnapshot = null
 
 export const useStoreNotes = defineStore('storeNotes', {
     state: () => {
@@ -14,9 +16,19 @@ export const useStoreNotes = defineStore('storeNotes', {
         }
     },
     actions: {
+        init() {
+            const storeAuth = useStoreAuth()
+            notesCollectionRef = collection(db, "users", storeAuth.user.id, 'notes')
+
+            notesCollectionQuery = query(notesCollectionRef, orderBy("date", "desc"));
+            this.getNotes()
+        },
         async getNotes() {
             this.notesLoaded = false
-            onSnapshot(notesCollectionQuery, (querySnapshot) => {
+
+            if (getNoteSnapshot) getNoteSnapshot() // unsubsbribe from any active listener
+
+            getNoteSnapshot = onSnapshot(notesCollectionQuery, (querySnapshot) => {
                 let notes = [];
                 querySnapshot.forEach((doc) => {
                     let note = {
@@ -30,6 +42,9 @@ export const useStoreNotes = defineStore('storeNotes', {
                 this.notes = notes
                 this.notesLoaded = true
             });
+        },
+        clearNotes() {
+            this.notes = []
         },
         async addNote(newNoteContent) {
             let currentDate = new Date().getTime(),
